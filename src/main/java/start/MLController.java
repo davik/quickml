@@ -14,11 +14,17 @@ import org.apache.spark.mllib.clustering.GaussianMixture;
 import org.apache.spark.mllib.clustering.GaussianMixtureModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheFactory;
+
 
 import static org.springframework.util.ResourceUtils.getFile;
 
@@ -97,4 +103,20 @@ public class MLController {
             return Collections.EMPTY_MAP;
         }
     }
+    
+    
+      @GetMapping("/")
+      String home() throws IOException{
+    	  byte[] bytes = new byte[0];
+    	  StringWriter strOut = new StringWriter();
+    	  String path = "musta\\";
+    	  path = path.replace("\\", "/");
+    	  Greetings gr = greeting("Avik");
+    	  
+    	  MustacheFactory mf = new DefaultMustacheFactory();
+		  Mustache mustache = mf.compile(path+"index.mustache");
+		  mustache.execute(strOut, gr).flush();
+		  String output = strOut.toString();
+		  return output;
+      }
 }
