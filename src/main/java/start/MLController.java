@@ -103,6 +103,50 @@ public class MLController {
             return Collections.EMPTY_MAP;
         }
     }
+
+    @RequestMapping(value = "/gmmSparkFrame")
+    public Map<String, List<Double>> runGMMFrame(
+            @RequestParam(value = "fileName") String fileName) {
+        if (fileName != null) {
+            File file;
+            BufferedReader br;
+            HashMap<String, List<Double>> model = new HashMap<>();
+            List<String> list = new ArrayList<>();
+            try {
+                file = getFile(fileName);
+                br = new BufferedReader(new FileReader(file));
+                Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(br);
+                for (CSVRecord record: records) {
+                    list.add(record.get("data"));
+                }
+                List<Vector> dataPointList = new ArrayList<>();
+                double data;
+
+                for(String s: list){
+                    data = Double.parseDouble(s);
+                    dataPointList.add(Vectors.dense(data).copy());
+                }
+                JavaRDD<Vector> parsedDataPoints = QuickML.getJavaSparkContext().parallelize(dataPointList);
+                GaussianMixtureModel gmmModel = new GaussianMixture().setK(2).setMaxIterations(1000).run(parsedDataPoints);
+
+                List<Double> mu = new ArrayList<>();
+                List<Double> sigma = new ArrayList<>();
+                for(int i = 0; i< gmmModel.k(); i++){
+                    mu.add(gmmModel.gaussians()[i].mu().toArray()[0]);
+                    sigma.add(Math.sqrt(gmmModel.gaussians()[i].sigma().toArray()[0]));
+                }
+                model.put("mu",mu);
+                model.put("sigma",sigma);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return model;
+        } else {
+            return Collections.EMPTY_MAP;
+        }
+    }
     
     
       @GetMapping("/")
