@@ -163,4 +163,10 @@ public class MLController {
 		  String output = strOut.toString();
 		  return output;
       }
+      
+      @RequestMapping("/dataFrame")
+      String hello(){
+    	  DataFrameUtils.exec();
+    	  return "success";
+      }
 }

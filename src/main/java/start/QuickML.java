@@ -6,30 +6,43 @@ package start;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.SparkSession;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class QuickML {
     private static JavaSparkContext javaSparkContext;
-    private static SQLContext sqlContext;
+    private static SparkSession spark;
 
     public static void main(String[] args) {
+        
+
+        SpringApplication.run(QuickML.class, args);
+        
         SparkConf sparkConf = new SparkConf().setAppName("Quick ML");
         sparkConf.setMaster("local[4]");
         sparkConf.set("spark.cleaner.ttl", "0");
         sparkConf.set("spark.driver.maxResultSize", "0");
-
+        
         javaSparkContext = new JavaSparkContext(sparkConf);
-        sqlContext = new SQLContext(javaSparkContext);
-        SpringApplication.run(QuickML.class, args);
+        
+        spark = SparkSession
+      		  .builder()
+      		  .appName("Java Spark SQL basic example")
+      		  .config("spark.some.config.option", "some-value")
+      		  .getOrCreate();
+       
     }
 
     public static JavaSparkContext getJavaSparkContext() {
         return javaSparkContext;
     }
 
-    public static SQLContext getSqlContext() {
-        return sqlContext;
-    }
+	public static SparkSession getSpark() {
+		return spark;
+	}
+
+
+    
 }
