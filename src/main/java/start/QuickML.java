@@ -20,13 +20,13 @@ public class QuickML {
 
         
         
-        SparkConf sparkConf = new SparkConf().setAppName("Quick ML");
-
-        sparkConf.setMaster("local[4]");
-        sparkConf.set("spark.cleaner.ttl", "0");
-        sparkConf.set("spark.driver.maxResultSize", "0");
-        
-        javaSparkContext = new JavaSparkContext(sparkConf);
+//        SparkConf sparkConf = new SparkConf().setAppName("Quick ML");
+//
+//        sparkConf.setMaster("local[4]");
+//        sparkConf.set("spark.cleaner.ttl", "0");
+//        sparkConf.set("spark.driver.maxResultSize", "0");
+//        
+//        javaSparkContext = new JavaSparkContext(sparkConf);
 
 //        sqlContext = new SQLContext(javaSparkContext);
         SpringApplication.run(QuickML.class, args);
