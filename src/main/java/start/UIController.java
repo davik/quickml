@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,15 +55,22 @@ public class UIController {
                 String.format(template, name));
     }
 	
-	@RequestMapping(value = "/average", method=RequestMethod.POST, consumes = "application/json")
-    String getAverage(@RequestBody Numbers numbers) throws IOException{
+	@RequestMapping(value = "/average", method=RequestMethod.POST)
+    String getAverage(@RequestBody String numbers) throws IOException{
+		System.out.println("Rest received");
+		System.out.println(numbers);
 		StringWriter strOut = new StringWriter();
-		
-    	Map<String, Double> stat = (new MLController()).getAverage(numbers);
+		numbers = numbers.replace(" ", "");
+		Pattern pattern = Pattern.compile(",");
+		List<Double> values = pattern.splitAsStream(numbers)
+		                            .map(Double::valueOf)
+		                            .collect(Collectors.toList());
+    	Map<String, Double> stat = (new MLController()).getAverage(new Numbers(values));
     	
     	Mustache mustache = mFactory.compile(path+"result.mustache");
   	  	mustache.execute(strOut, stat).flush();
   	  	String output = strOut.toString();
+  	  	System.out.println(output);
   	  	return output;
     	
     }

@@ -16,11 +16,10 @@ public class QuickML {
     private static SparkSession spark;
 
     public static void main(String[] args) {
-        
 
-        
-        
-//        SparkConf sparkConf = new SparkConf().setAppName("Quick ML");
+//        SparkConf sparkConf = new SparkConf();
+//        sparkConf.setSparkHome("C:\\Users\\avik\\Documents\\spark-2.2.0-bin-hadoop2.7\\spark-2.2.0-bin-hadoop2.7");
+//        sparkConf.setAppName("Quick ML");   
 //
 //        sparkConf.setMaster("local[4]");
 //        sparkConf.set("spark.cleaner.ttl", "0");
@@ -31,6 +30,7 @@ public class QuickML {
 //        sqlContext = new SQLContext(javaSparkContext);
         SpringApplication.run(QuickML.class, args);
 
+        
     }
 
     public static JavaSparkContext getJavaSparkContext() {

@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.catalina.mapper.Mapper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.GaussianMixture;
 import org.apache.spark.mllib.clustering.GaussianMixtureModel;
@@ -152,10 +153,11 @@ public class MLController {
     
     @RequestMapping(value = "/ml/average", method=RequestMethod.POST, consumes = "application/json")
     public Map<String, Double> getAverage(@RequestBody Numbers numbers) {
-    	Map<String, Double> stat = new HashMap<String, Double>();
+    	Map<String, Double> statMap = new HashMap<String, Double>();
+    	DescriptiveStatistics stats = new DescriptiveStatistics();
     	
     	List<Double> numbersz =  numbers.getNumbers();
-    	Double avg = 0.0;
+    	/*Double avg = 0.0;
     	Double sum = 0.0;
     	for(Double number: numbersz) {
     		sum = sum + number;
@@ -165,9 +167,22 @@ public class MLController {
     	} catch(ArithmeticException e) {
     		stat.put("Error", 0.0);
     		return stat;
+    	}*/
+    	
+    	for(Double val: numbersz) {
+    		stats.addValue(val);
     	}
-    	stat.put("average", avg);
-    	return stat;
+    	
+    	statMap.put("mean", stats.getMean());
+    	statMap.put("geomean", stats.getGeometricMean());
+    	statMap.put("max", stats.getMax());
+    	statMap.put("min", stats.getMin());
+    	statMap.put("skewness", stats.getSkewness());
+    	statMap.put("kurtosis", stats.getKurtosis());
+    	statMap.put("sd", stats.getStandardDeviation());
+    	statMap.put("sum", stats.getSum());
+    	statMap.put("var", stats.getVariance());
+    	return statMap;
     }
     
    

@@ -1,11 +1,35 @@
 {{>header}}
 {{>body}}
+<script type="text/javascript">
 
-<div>
-    <h3>Input some numbers below(Separeted with commas)</h3>
-    <textarea placeholder="numbers"></textarea>
+$(document).ready(function () {
+  // Listen to click event on the submit button
+  $('#button').click(function (e) {
+
+    e.preventDefault();
+
+    var numbers = $("#numbers").val();
+
+    $.ajax({
+		  type: "POST",
+		  url: "/average",
+		  data: numbers,
+		  success: function(data){$("#result").html(data)},
+		  dataType: "text",
+		  contentType: "text/plain"
+		});
+  });
+});
+</script>
+<div id="inputHere">
+	<form enctype='application/json' id="myForm">
+	<h3>Descriptive Statistics</h3>
+    <h4>Input some numbers below(Separeted with commas)</h4>
+    <textarea type="text" name="numbers" id="numbers"></textarea>
+	<button id="button">Submit</button>
+	</form>
 </div>
-<div><button type="submit" name="Submit" value="Submit">Submit</button></div>
+<div id="result"></div>
 
 
 {{>footer}}
