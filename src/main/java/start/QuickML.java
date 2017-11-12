@@ -15,13 +15,15 @@ public class QuickML {
     private static SQLContext sqlContext;
 
     public static void main(String[] args) {
-        SparkConf sparkConf = new SparkConf().setAppName("Quick ML");
+        SparkConf sparkConf = new SparkConf();
+        sparkConf.setSparkHome("C:\\Users\\avik\\Documents\\spark-2.2.0-bin-hadoop2.7\\spark-2.2.0-bin-hadoop2.7");
+        sparkConf.setAppName("Quick ML");
         sparkConf.setMaster("local[4]");
         sparkConf.set("spark.cleaner.ttl", "0");
         sparkConf.set("spark.driver.maxResultSize", "0");
 
         javaSparkContext = new JavaSparkContext(sparkConf);
-        sqlContext = new SQLContext(javaSparkContext);
+//        sqlContext = new SQLContext(javaSparkContext);
         SpringApplication.run(QuickML.class, args);
     }
 

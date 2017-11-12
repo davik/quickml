@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.catalina.mapper.Mapper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.spark.api.java.JavaRDD;
@@ -15,30 +16,31 @@ import org.apache.spark.mllib.clustering.GaussianMixtureModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 
+import pojos.Numbers;
 
 import static org.springframework.util.ResourceUtils.getFile;
 
 @RestController
 public class MLController {
-
-    private static final String template = "Hello, %s!";
-    private final AtomicLong counter = new AtomicLong();
-
-    @RequestMapping("/greeting")
-    public Greetings greeting(@RequestParam(value="name", defaultValue="World") String name) {
-        return new Greetings(counter.incrementAndGet(),
-                String.format(template, name));
-    }
+	
+	ObjectMapper mapper;
+	
+	public MLController() {
+		// TODO Auto-generated constructor stub
+		mapper = new ObjectMapper();
+	}
 
     @RequestMapping(value="/upload", method=RequestMethod.POST)
     public String handleFileUpload(
@@ -148,19 +150,26 @@ public class MLController {
         }
     }
     
+    @RequestMapping(value = "/ml/average", method=RequestMethod.POST, consumes = "application/json")
+    public Map<String, Double> getAverage(@RequestBody Numbers numbers) {
+    	Map<String, Double> stat = new HashMap<String, Double>();
+    	
+    	List<Double> numbersz =  numbers.getNumbers();
+    	Double avg = 0.0;
+    	Double sum = 0.0;
+    	for(Double number: numbersz) {
+    		sum = sum + number;
+    	}
+    	try {
+    	avg = sum / numbersz.size();
+    	} catch(ArithmeticException e) {
+    		stat.put("Error", 0.0);
+    		return stat;
+    	}
+    	stat.put("average", avg);
+    	return stat;
+    }
     
-      @GetMapping("/")
-      String home() throws IOException{
-    	  byte[] bytes = new byte[0];
-    	  StringWriter strOut = new StringWriter();
-    	  String path = "musta\\";
-    	  path = path.replace("\\", "/");
-    	  Greetings gr = greeting("Avik");
-    	  
-    	  MustacheFactory mf = new DefaultMustacheFactory();
-		  Mustache mustache = mf.compile(path+"index.mustache");
-		  mustache.execute(strOut, gr).flush();
-		  String output = strOut.toString();
-		  return output;
-      }
+    
+      
 }
